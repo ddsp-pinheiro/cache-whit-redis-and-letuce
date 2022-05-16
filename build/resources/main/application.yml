@@ -14,6 +14,5 @@ spring:
     port: 6379
     password:
     host: locahost
-    timeToLive: 60
   server:
     port: 8080

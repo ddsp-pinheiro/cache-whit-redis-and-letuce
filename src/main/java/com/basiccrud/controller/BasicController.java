@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/basiccrud")
+@RequestMapping("/basiccrud/test-cache/")
 public class BasicController {
 
     @Autowired

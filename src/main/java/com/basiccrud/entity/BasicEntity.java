@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "basic_entity")
+@Entity(name = "basic_entity_cache")
 public class BasicEntity {
     @Id
     @Column(name = "id")
