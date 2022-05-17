@@ -1,4 +1,5 @@
 # cache-with-redis-and-letuce
+Aplicação Spring com crud completo fazendo cache nos metodos GET utilizando de Redis e Lettuce. 
 
 ## API 
 ### Requisições
