@@ -4,8 +4,7 @@
 ### Requisições
 #### Post
 
-```diff
-http
+```http
   POST http://localhost:8080/basiccrud/test-cache/
 ```
 
@@ -43,18 +42,30 @@ http
 ### Para rodar aplicação
 
 #### Subir o container com redis
-
+```bash
   docker run -it --name redis -p 6379:6379 redis:5.0.3
+```
 
 #### Para ver chaves salvas no redis ou deletar
 
-  Conectar com container do redis: docker exec -it redis /bin/sh
-  
-  Acessar CLI do Redis: redis-CLI
-  
-  (Caso adicione senha) Autentificar senha definida: auth {INSIRA AQUI A SENHA}
-  
-  Lista as chaves criadas: keys *
-  
-  Para deletar uma chave: del "{INSIRA AQUI A SENHA DESEJADA}"
+  Conectar com container do redis:
+```bash
+  docker exec -it redis /bin/sh
+```  
+  Acessar CLI do Redis: 
+```bash  
+  redis-CLI
+```
+  (Caso adicione senha) Autentificar senha definida: 
+```bash
+  auth {INSIRA AQUI A SENHA}
+```
+  Lista as chaves criadas: 
+```bash
+  keys *
+```
+  Para deletar uma chave: 
+```bash
+  del "{INSIRA AQUI A SENHA DESEJADA}"
+```
   
