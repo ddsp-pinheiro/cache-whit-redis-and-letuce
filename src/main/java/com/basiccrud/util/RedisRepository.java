@@ -20,7 +20,7 @@ public class RedisRepository {
         try {
            String jsonObject = objectMapper.writeValueAsString(value);
            redisTemplate.opsForValue().set(key,jsonObject);
-            redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
+           redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
         } catch (RuntimeException e) {
             throw new RedisException("Error while saving to cache ", e);
         }

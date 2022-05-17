@@ -12,7 +12,7 @@ spring:
     show-sql: true
   redis:
     port: 6379
-    password: SENHA
-    host: locahost
+    password:
+    host: 127.0.0.1
   server:
     port: 8080

@@ -41,7 +41,7 @@ public class BasicService {
         BasicEntity basicEntity = redisRepository.get(BasicEntity.class, redisKey);
         if (basicEntity == null) {
             basicEntity = basicRepository.findById(id).orElseThrow(() -> new NotFoundException(ID_NOT_FOUND));
-            return basicEntity;
+            redisRepository.set(redisKey,basicEntity,CACHE_TIME);
         }
         return basicEntity;
     }
@@ -51,7 +51,7 @@ public class BasicService {
         BasicEntity basicEntity = redisRepository.get(BasicEntity.class, redisKey);
         if (basicEntity == null) {
             basicEntity = basicRepository.findByName(name).orElseThrow(() -> new NotFoundException(NAME_NOT_FOUND));
-            return basicEntity;
+            redisRepository.set(redisKey,basicEntity,CACHE_TIME);
         }
         return basicEntity;
     }
