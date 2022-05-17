@@ -39,13 +39,13 @@
 | :-------- | :------- | :-------------------------------- |
 | `id`      | `Long` | **OBRIGATORIO**. id que deseja deletar  |
 
-###Para rodar aplicação
+### Para rodar aplicação
 
-####Subir o container com redis
+#### Subir o container com redis
 
   docker run -it --name redis -p 6379:6379 redis:5.0.3
 
-####Para ver chaves salvas no redis ou deletar
+#### Para ver chaves salvas no redis ou deletar
 
   Conectar com container do redis: docker exec -it redis /bin/sh
   
