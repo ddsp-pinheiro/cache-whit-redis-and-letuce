@@ -16,6 +16,10 @@ public class BasicService {
 
     private static final String NAME_NOT_FOUND = "Name not found";
     private static final String ID_NOT_FOUND = "Id not found";
+    public static final int CACHE_TIME = 900;
+    private static final String ID_REDIS_KEY = "data:%s:id";
+    private static final String NAME_REDIS_KEY = "data:%s:name";
+
 
     @Autowired
     private BasicRepository basicRepository;
@@ -33,18 +37,23 @@ public class BasicService {
     }
 
     public BasicEntity getById(final Long id){
-        if (redisRepository.get("id") != null) {
-            return (BasicEntity) redisRepository.get("id");
-
-        } else {
-            return basicRepository.findById(id).orElseThrow(() -> new NotFoundException(ID_NOT_FOUND));
-            redisRepository.put("id",id);
-            return (BasicEntity) redisRepository.get("id");
+        String redisKey = String.format(ID_REDIS_KEY,id);
+        BasicEntity basicEntity = redisRepository.get(BasicEntity.class, redisKey);
+        if (basicEntity == null) {
+            basicEntity = basicRepository.findById(id).orElseThrow(() -> new NotFoundException(ID_NOT_FOUND));
+            return basicEntity;
         }
+        return basicEntity;
     }
 
     public BasicEntity getByName(final String name){
-        return basicRepository.findByName(name).orElseThrow(() -> new NotFoundException(NAME_NOT_FOUND));
+        String redisKey = String.format(NAME_REDIS_KEY,name);
+        BasicEntity basicEntity = redisRepository.get(BasicEntity.class, redisKey);
+        if (basicEntity == null) {
+            basicEntity = basicRepository.findByName(name).orElseThrow(() -> new NotFoundException(NAME_NOT_FOUND));
+            return basicEntity;
+        }
+        return basicEntity;
     }
 
     public void deleteById(Long id){

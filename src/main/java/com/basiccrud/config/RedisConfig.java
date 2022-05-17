@@ -1,6 +1,8 @@
 package com.basiccrud.config;
 
 import io.lettuce.core.ClientOptions;
+import io.lettuce.core.resource.ClientResources;
+import io.lettuce.core.resource.DefaultClientResources;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -11,26 +13,31 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 public class RedisConfig {
 
-    private final String url;
-    private final int port;
+    @Value("${redis.host}")
+    private String host;
+    @Value("${redis.port}")
+    private int port;
+    @Value("${redis.password}")
+    private String password;
 
-
-    public RedisConfig(@Value("${spring.redis.host}") String url,
-                                  @Value("${spring.redis.port}") int port
-                                 ) {
-        this.url = url;
-        this.port = port;
-
+    @Bean(destroyMethod = "shutdown")
+    ClientResources clientResources(){
+        return DefaultClientResources.create();
     }
 
     @Bean
     public RedisStandaloneConfiguration redisStandaloneConfiguration() {
-        return new RedisStandaloneConfiguration(url, port);
+        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(host, port);
+        redisStandaloneConfiguration.setPassword(password);
+        return redisStandaloneConfiguration;
     }
+
 
     @Bean
     public ClientOptions clientOptions(){
@@ -41,9 +48,8 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisConnectionFactory connectionFactory(RedisStandaloneConfiguration redisStandaloneConfiguration,
-                                                    LettucePoolingClientConfiguration lettucePoolConfig) {
-        return new LettuceConnectionFactory(redisStandaloneConfiguration, lettucePoolConfig);
+    public RedisConnectionFactory connectionFactory(RedisStandaloneConfiguration redisStandaloneConfiguration) {
+        return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
 
     @Bean
@@ -51,6 +57,9 @@ public class RedisConfig {
     @Primary
     public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<Object, Object> template = new RedisTemplate<>();
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setHashKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
         template.setConnectionFactory(redisConnectionFactory);
         return template;
     }

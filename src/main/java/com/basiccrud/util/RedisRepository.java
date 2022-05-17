@@ -1,70 +1,45 @@
 package com.basiccrud.util;
 
 import com.basiccrud.exception.CacheException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.lettuce.core.RedisException;
+import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Repository
-public class RedisRepository<T> {
+@AllArgsConstructor
+public class RedisRepository {
 
-    private long ttl;
-    private StringRedisTemplate redisTemplate;
-    private ValueOperations<String, String> valueOps;
-
-    @Autowired
-    public RedisRepository(StringRedisTemplate redisTemplate,
-                              @Value("${spring.redis.timeToLive}") long ttl) {
-        this.redisTemplate = redisTemplate;
-        valueOps = redisTemplate.opsForValue();
-        this.ttl = ttl;
-    }
-
-    /**
-     * Save the key value pair in cache with a ttl
-     *
-     * @param key   cache key
-     * @param value cache value
-     */
-
-    public void put(String key, T value) {
+    private RedisTemplate<String,String> redisTemplate;
+    private ObjectMapper objectMapper;
+    @SneakyThrows
+    public <T> void set(String key, T value, long timeout) {
         try {
-            valueOps.set(key, String.valueOf(value));
-            redisTemplate.expire(key, ttl, TimeUnit.SECONDS);
+           String jsonObject = objectMapper.writeValueAsString(value);
+           redisTemplate.opsForValue().set(key,jsonObject);
+            redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
         } catch (RuntimeException e) {
-            throw new CacheException("Error while saving to cache ", e);
+            throw new RedisException("Error while saving to cache ", e);
         }
     }
 
-    /**
-     * Returns the cached value
-     *
-     * @param key cached key
-     * @return cached value
-     */
-    public T  get(String key) {
+    @SneakyThrows
+    public <T> T get(Class<T> clazz, String key) {
         try {
-            Boolean b = redisTemplate.hasKey(key);
-            if (Boolean.TRUE.equals(b)) {
-                return (T) Optional.ofNullable(valueOps.get(key));
+            if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
+                String jsonObject = redisTemplate.opsForValue().get(key);
+                return objectMapper.readValue(jsonObject, clazz);
             } else {
-                return (T) Optional.empty();
+                return null;
             }
         } catch (RuntimeException e) {
-            throw new CacheException("Error while retrieving from the cache ", e);
+            throw new RedisException("Error while retrieving from the cache ", e);
         }
     }
 
-    /**
-     * Remove the cached value
-     *
-     * @param key cached key
-     */
     public void remove(String key) {
         try {
             redisTemplate.delete(key);
