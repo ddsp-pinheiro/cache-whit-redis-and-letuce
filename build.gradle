@@ -24,7 +24,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.mapstruct:mapstruct:1.4.2.Final'
-//	compile 'io.lettuce:lettuce-core:6.1.8.RELEASE'
+	implementation 'io.lettuce:lettuce-core:6.1.8.RELEASE'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'mysql:mysql-connector-java'
